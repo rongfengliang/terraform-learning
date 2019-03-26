@@ -7,6 +7,17 @@ data "template_file" "init" {
     platform ="mobile"
   }
 }
+
+
+data "http" "example" {
+  url = "https://checkpoint-api.hashicorp.com/v1/check/terraform"
+
+  # Optional request headers
+  request_headers {
+    "Accept" = "application/json"
+  }
+}
+
 data "local_file" "foo" {
     filename = "${path.module}/token.ini"
 }
@@ -14,6 +25,6 @@ data "local_file" "foo" {
 
 // base64  && format function demo
 resource "local_file" "foo" {
-    content  = "${base64encode(format("%s\n%s",data.template_file.init.rendered, data.local_file.foo.content))}" 
+    content  = "${base64encode(format("%s\n%s\n%s",data.template_file.init.rendered, data.local_file.foo.content,data.http.example.body))}" 
     filename = "${path.module}/init.sh"
 }
